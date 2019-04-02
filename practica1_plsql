@@ -101,7 +101,18 @@ create or replace procedure MostrarMasAntiguos
 is
 	cursor c_emp
 	is
-	select ename,dname
+	select ename, dname
+	from emp e, dept d
+	where e.deptno=d.deptno
+	and hiredate = (select min(hiredate)
+					from emp e2
+					where e2.deptno=e.deptno);
+begin
+	for elem in c_emp loop
+		dbms_output.put_line(elem.ename||' = '||elem.dname);
+	end loop;
+end MostrarMasAntiguos;
+/
 
 7.-Realiza un procedimiento MostrarJefes que reciba el nombre de un departamento y muestre los nombres de los 
 empleados de ese departamento que son jefes de otros empleados.Trata las excepciones que consideres necesarias.
