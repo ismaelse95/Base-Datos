@@ -19,9 +19,11 @@ end DevolverCodDept;
 
 SELECT DevolverCodDept('SALES') FROM DUAL;
 
-2.-Realiza un procedimiento llamado HallarNumEmp que recibiendo un nombre de departamento, muestre en pantalla el número de empleados de dicho departamento. Puedes utilizar la función creada en el ejercicio 1.
+2.-Realiza un procedimiento llamado HallarNumEmp que recibiendo un nombre de departamento, muestre en pantalla el 
+número de empleados de dicho departamento. Puedes utilizar la función creada en el ejercicio 1.
 
-Si el departamento no tiene empleados deberá mostrar un mensaje informando de ello. Si el departamento no existe se tratará la excepción correspondiente.
+Si el departamento no tiene empleados deberá mostrar un mensaje informando de ello. Si el departamento no existe 
+se tratará la excepción correspondiente.
 
 create or replace procedure HallarNumEmp(p_nombre dept.dname%type)
 is
@@ -38,8 +40,8 @@ begin
 end HallarNumEmp;
 /
 
-3.-Realiza una función llamada CalcularCosteSalarial que reciba un nombre de departamento y devuelva la suma de los salarios 
-y comisiones de los empleados de dicho departamento. Trata las excepciones que consideres necesarias.
+3.-Realiza una función llamada CalcularCosteSalarial que reciba un nombre de departamento y devuelva la suma 
+de los salarios y comisiones de los empleados de dicho departamento. Trata las excepciones que consideres necesarias.
 
 create or replace function CalcularCosteSalarial(p_nombredept	dept.deptno%type)
 return NUMBER
@@ -86,8 +88,8 @@ is
 	select ename
 	from emp;
 begin
-	for i in c_emp loop
-		dbms_output.put_line(substr(i.ename,1,3));
+	for elem in c_emp loop
+		dbms_output.put_line(substr(elem.ename,1,3));
 	end loop;
 end MostrarAbreviaturas;
 /
@@ -101,20 +103,25 @@ is
 	is
 	select ename,dname
 
-7.-Realiza un procedimiento MostrarJefes que reciba el nombre de un departamento y muestre los nombres de los empleados de ese departamento que son jefes de otros empleados.Trata las excepciones que consideres necesarias.
+7.-Realiza un procedimiento MostrarJefes que reciba el nombre de un departamento y muestre los nombres de los 
+empleados de ese departamento que son jefes de otros empleados.Trata las excepciones que consideres necesarias.
 
 
 
-8.-Realiza un procedimiento MostrarMejoresVendedores que muestre los nombres de los dos vendedores con más comisiones. Trata las excepciones que consideres necesarias.
+8.-Realiza un procedimiento MostrarMejoresVendedores que muestre los nombres de los dos vendedores con más comisiones. 
+Trata las excepciones que consideres necesarias.
 
 
 
-9.-Realiza un procedimiento MostrarsodaelpmE que reciba el nombre de un departamento al revés y muestre los nombres de los empleados de ese departamento. Trata las excepciones que consideres necesarias.
+9.-Realiza un procedimiento MostrarsodaelpmE que reciba el nombre de un departamento al revés y muestre los nombres 
+de los empleados de ese departamento. Trata las excepciones que consideres necesarias.
 
 
 
-10.-Realiza un procedimiento RecortarSueldos que recorte el sueldo un 20% a los empleados cuyo nombre empiece por la letra que recibe como parámetro.Trata las excepciones que consideres necesarias.
+10.-Realiza un procedimiento RecortarSueldos que recorte el sueldo un 20% a los empleados cuyo nombre empiece por la 
+letra que recibe como parámetro.Trata las excepciones que consideres necesarias.
 
 
 
-11.-Realiza un procedimiento BorrarBecarios que borre a los dos empleados más nuevos de cada departamento. Trata las excepciones que consideres necesarias.
+11.-Realiza un procedimiento BorrarBecarios que borre a los dos empleados más nuevos de cada departamento. 
+Trata las excepciones que consideres necesarias.
