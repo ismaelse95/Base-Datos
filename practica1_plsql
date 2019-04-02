@@ -1,0 +1,112 @@
+1.-Haz una función llamada DevolverCodDept que reciba el nombre de un departamento y devuelva su código.
+
+create or replace function DevolverCodDept(p_nombre dept.dname%type)
+return dept.deptno%type
+is
+	v_codigo	dept.deptno%type;
+begin
+	select deptno into v_codigo
+	from dept
+	where dname = p_nombre;
+	return v_codigo;
+exception
+	when NO_DATA_FOUND then
+		dbms_output.put_line('No existe el nombre de departamento '||p_nombre)
+end DevolverCodDept;
+/
+
+SELECT DevolverCodDept('SALES') FROM DUAL;
+
+2.-Realiza un procedimiento llamado HallarNumEmp que recibiendo un nombre de departamento, muestre en pantalla el número de empleados de dicho departamento. Puedes utilizar la función creada en el ejercicio 1.
+
+Si el departamento no tiene empleados deberá mostrar un mensaje informando de ello. Si el departamento no existe se tratará la excepción correspondiente.
+
+create or replace procedure HallarNumEmp(p_nombre dept.dname%type)
+is
+	v_codigodept		dept.deptno%type;
+	v_numeroempleado	NUMBER;
+begin
+	v_codigodept:=DevolverCodDept(p_nombre);
+	select count(*) into v_numeroempleado
+	from emp
+	where deptno=v_codigodept;
+	if v_numeroempleado = 0 then
+		dbms_output.put_line('No existe el empleado'||p_nombre)
+	end if;
+end;
+/
+
+3.-Realiza una función llamada CalcularCosteSalarial que reciba un nombre de departamento y devuelva la suma de los salarios 
+y comisiones de los empleados de dicho departamento. Trata las excepciones que consideres necesarias.
+
+create or replace function CalcularCosteSalarial(p_nombredept	dept.deptno%type)
+return NUMBER
+is
+	v_codigodept	dept.deptno%type;
+	v_total			NUMBER;
+begin
+	v_codigodept:=DevolverCodDept(p_nombre)
+	select sum(sal+nvl(comm,0)) into v_total
+	from emp
+	where deptno=v_codigodept;
+	return v_total;
+end;
+/
+
+4.-Realiza un procedimiento MostrarCostesSalariales que muestre los nombres de todos los departamentos 
+y el coste salarial de cada uno de ellos. Puedes usar la función del ejercicio 3.
+
+create or replace procedure MostrarCostesSalariales
+is
+	cursor c_nombredept
+	select dname
+	from deptno;
+	v_total		NUMBER;
+	v_nombre	dept.dname%type;
+begin
+	open c_nombredept;
+	fetch c_nombredept into v_nombre;
+	where c_nombredept%found loop
+	v_total:=CalcularCosteSalarial
+
+5.-Realiza un procedimiento MostrarAbreviaturas que muestre las tres primeras letras del nombre de cada empleado.
+
+create or replace procedure MostrarAbreviaturas
+is
+	cursor c_emp
+	is
+	select ename
+	from emp;
+begin
+	for i in c_emp loop
+		dbms_output.put_line(substr(i.ename,1,3));
+	end loop;
+end MostrarAbreviaturas;
+/
+
+6.-Realiza un procedimiento MostrarMasAntiguos que muestre el nombre del empleado más antiguo de cada departamento 
+junto con el nombre del departamento. Trata las excepciones que consideres necesarias.
+
+create or replace procedure MostrarMasAntiguos
+is
+	cursor c_emp
+	is
+	select ename,dname
+
+7.-Realiza un procedimiento MostrarJefes que reciba el nombre de un departamento y muestre los nombres de los empleados de ese departamento que son jefes de otros empleados.Trata las excepciones que consideres necesarias.
+
+
+
+8.-Realiza un procedimiento MostrarMejoresVendedores que muestre los nombres de los dos vendedores con más comisiones. Trata las excepciones que consideres necesarias.
+
+
+
+9.-Realiza un procedimiento MostrarsodaelpmE que reciba el nombre de un departamento al revés y muestre los nombres de los empleados de ese departamento. Trata las excepciones que consideres necesarias.
+
+
+
+10.-Realiza un procedimiento RecortarSueldos que recorte el sueldo un 20% a los empleados cuyo nombre empiece por la letra que recibe como parámetro.Trata las excepciones que consideres necesarias.
+
+
+
+11.-Realiza un procedimiento BorrarBecarios que borre a los dos empleados más nuevos de cada departamento. Trata las excepciones que consideres necesarias.
