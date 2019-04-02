@@ -60,14 +60,20 @@ create or replace procedure MostrarCostesSalariales
 is
 	cursor c_nombredept
 	select dname
-	from deptno;
+	from dept;
 	v_total		NUMBER;
 	v_nombre	dept.dname%type;
 begin
 	open c_nombredept;
-	fetch c_nombredept into v_nombre;
-	where c_nombredept%found loop
-	v_total:=CalcularCosteSalarial
+	fetch c_nombredept into v_dept;
+	while c_nombredept%FOUND loop
+		v_total:=CalcularCostesSalariales(v_nombre);
+		dbms_output.put_line(v_dept.dname||' '||v_total);
+		fetch c_nombredept into v_dept;
+	end loop;
+	close c_dept;
+end;
+/
 
 5.-Realiza un procedimiento MostrarAbreviaturas que muestre las tres primeras letras del nombre de cada empleado.
 
