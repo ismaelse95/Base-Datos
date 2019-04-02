@@ -1,3 +1,5 @@
+#TODOS LOS EJERCICIOS ESTAN REALIZADOS CON LA CUENTA SCOTT DE ORACLE
+
 1.-Haz una función llamada DevolverCodDept que reciba el nombre de un departamento y devuelva su código.
 
 create or replace function DevolverCodDept(p_nombre dept.dname%type)
