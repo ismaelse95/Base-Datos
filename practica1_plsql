@@ -33,7 +33,7 @@ begin
 	if v_numeroempleado = 0 then
 		dbms_output.put_line('No existe el empleado'||p_nombre)
 	end if;
-end;
+end HallarNumEmp;
 /
 
 3.-Realiza una función llamada CalcularCosteSalarial que reciba un nombre de departamento y devuelva la suma de los salarios 
@@ -50,7 +50,7 @@ begin
 	from emp
 	where deptno=v_codigodept;
 	return v_total;
-end;
+end CalcularCosteSalarial;
 /
 
 4.-Realiza un procedimiento MostrarCostesSalariales que muestre los nombres de todos los departamentos 
@@ -72,7 +72,7 @@ begin
 		fetch c_nombredept into v_dept;
 	end loop;
 	close c_dept;
-end;
+end MostrarCostesSalariales;
 /
 
 5.-Realiza un procedimiento MostrarAbreviaturas que muestre las tres primeras letras del nombre de cada empleado.
