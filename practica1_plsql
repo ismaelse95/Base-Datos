@@ -115,9 +115,34 @@ end MostrarMasAntiguos;
 /
 
 7.-Realiza un procedimiento MostrarJefes que reciba el nombre de un departamento y muestre los nombres de los 
-empleados de ese departamento que son jefes de otros empleados.Trata las excepciones que consideres necesarias.
+empleados de ese departamento que son jefes de otros empleados. Trata las excepciones que consideres necesarias.
 
+create or replace procedure MostrarJefes(p_nombre 	dept.dname%type)
+is
+	v_coddept 	dept.deptno%type;
 
+	cursor c_emp
+	is
+	select ename
+	from emp
+	where empno = (select mgr
+				   from emp)
+	and deptno=v_coddept;
+
+	v_ind	NUMBER:=0;
+begin
+	v_coddept:=DevolverCodDept(p_nombre);
+	dbms_output.put_line('Jefes del Departamento '||p_nombre);
+	if v_coddept>=0 then
+		for elem in c_emp loop
+			dbms_output.put_line(elem.ename);
+			v_ind:=1;
+		end loop;
+		if v_ind=0 then
+			dbms_output.put_line('No hay Jefes');
+		end if;
+end MostrarJefes;
+/
 
 8.-Realiza un procedimiento MostrarMejoresVendedores que muestre los nombres de los dos vendedores con más comisiones. 
 Trata las excepciones que consideres necesarias.
@@ -130,9 +155,22 @@ de los empleados de ese departamento. Trata las excepciones que consideres neces
 
 
 10.-Realiza un procedimiento RecortarSueldos que recorte el sueldo un 20% a los empleados cuyo nombre empiece por la 
-letra que recibe como parámetro.Trata las excepciones que consideres necesarias.
+letra que recibe como parámetro. Trata las excepciones que consideres necesarias.
 
-
+create or replace procedure RecortarSueldos (p_letra emp.ename%type)
+is
+begin
+	update emp
+	set sal = sal - 0.2 * sal
+	where substr(ename,1,1) = p_letra;
+	if SQL%ROWCOUNT = 0 then
+		dbms_output.put_line('No hay empleado que empiece por la letra '||p_letra);
+	else
+		dbms_output.put_line('Se le ha bajado el sueldo a '||SQL%ROWCOUNT||' trabajadores.');
+	end if;
+end RecortarSueldos;
+/
 
 11.-Realiza un procedimiento BorrarBecarios que borre a los dos empleados más nuevos de cada departamento. 
 Trata las excepciones que consideres necesarias.
+
