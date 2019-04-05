@@ -280,15 +280,15 @@ Trata las excepciones que consideres necesarias.
 
 create or replace procedure BorrarBecarios
 is
-	cursor c_dept
+	cursor c_depart
 	is
 	select deptno
 	from dept;
 begin
-	for elem in c_dept loop
+	for elem in c_depart loop
 		BorrarDosBecarios(elem.deptno);
 	end loop;
-end;
+end BorrarBecarios;
 /
 
 create or replace procedure BorrarDosBecarios (p_coddept dept.deptno%type)
@@ -310,5 +310,5 @@ begin
 		fetch c_emp into v_emp;
 	end loop;
 	close c_emp;
-end;
+end BorrarDosBecarios;
 /
