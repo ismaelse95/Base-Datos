@@ -166,11 +166,97 @@ begin
 		dbms_output.put_line(v_nombre);
 	end loop;
 	close c_emp;
+end MostrarMejoresVendedores;
+/
+
+create or replace procedure ComprobarExcepciones
+is
+begin
+	ComprobarTablaVacia;
+	ComprobarSiHayVendedores;
+	ComprobarNumComisiones;
+end ComprobarExcepciones;
+/
+
+create or replace procedure ComprobarTablaVacia
+is
+	v_num 	NUMBER;
+begin
+	select count(*) into v_num
+	from emp;
+	if v_num=0 then
+		raise_application_erro(-20001,'Tabla EMP vacia');
+	end if;
+end ComprobarTablaVacia;
+/
+
+create or replace procedure ComprobarSiHayVendedores
+is
+	v_num 	NUMBER;
+begin
+	select count(*) into v_num
+	from emp
+	where job='SALESMAN';
+	if v_num=0 then
+		raise_application_erro(-20001,'No hay vendedores en la tabla EMP');
+	end if;
+end ComprobarSiHayVendedores;
+/
+
+create or replace procedure ComprobarNumComisiones
+is
+	v_num 	NUMBER;
+begin
+	select count(*) into v_num
+	from emp
+	where comm is not null;
+	if v_num<2 then
+		raise_application_erro(-20001,'No hay comisiones.');
+	end if;
+end ComprobarNumComisiones;
+/
 
 9.-Realiza un procedimiento MostrarsodaelpmE que reciba el nombre de un departamento al revés y muestre los nombres 
 de los empleados de ese departamento. Trata las excepciones que consideres necesarias.
 
+create or replace procedure MostrarsodaelpmE (p_nombre dept.dname%type)
+is
+	v_nombrealderecho	dept.dname%type;
+begin
+	v_nombrealderecho:=AlReves(p_nombre);
+	MostrarEmpleados(v_nombrealderecho);
+end MostrarsodaelpmE;
+/
 
+create or replace function AlReves (p_cadena VARCHAR2)
+return VARCHAR2
+is
+	v_aux	VARCHAR2(30):='';			
+begin
+	for i in reverse 1..length(p_cadena)
+	LOOP
+		v_aux:=v_aux||substr(p_cad,i,1);
+	end LOOP;
+	return v_aux;
+end;
+/
+
+create or replace procedure MostrarEmpleados (p_nombre 	dept.dname%type)
+is
+	v_deptno	dept.deptno%type;
+
+	cursor c_emp
+	is
+	select ename
+	from emp
+	where deptno = v_deptno;
+begin
+	v_deptno:=DevolverCodDept(p_nombre);
+	for elem in c_emp loop
+		dbms_output.put_line(elem.ename);
+	end loop;
+end MostrarEmpleados;
+/
 
 10.-Realiza un procedimiento RecortarSueldos que recorte el sueldo un 20% a los empleados cuyo nombre empiece por la 
 letra que recibe como parámetro. Trata las excepciones que consideres necesarias.
