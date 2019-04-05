@@ -147,7 +147,25 @@ end MostrarJefes;
 8.-Realiza un procedimiento MostrarMejoresVendedores que muestre los nombres de los dos vendedores con más comisiones. 
 Trata las excepciones que consideres necesarias.
 
+create or replace procedure MostrarMejoresVendedores
+is
+	cursor c_emp
+	is
+	select ename
+	from emp
+	where comm is not null
+	and job='SALESMAN'
+	order by comm desc;
 
+	v_nombre	emp.ename%type;
+begin
+	ComprobarExcepciones;
+	open c_emp;
+	for elem in 1..2 loop
+		fetch c_emp into v_nombre;
+		dbms_output.put_line(v_nombre);
+	end loop;
+	close c_emp;
 
 9.-Realiza un procedimiento MostrarsodaelpmE que reciba el nombre de un departamento al revés y muestre los nombres 
 de los empleados de ese departamento. Trata las excepciones que consideres necesarias.
@@ -174,3 +192,37 @@ end RecortarSueldos;
 11.-Realiza un procedimiento BorrarBecarios que borre a los dos empleados más nuevos de cada departamento. 
 Trata las excepciones que consideres necesarias.
 
+create or replace procedure BorrarBecarios
+is
+	cursor c_dept
+	is
+	select deptno
+	from dept;
+begin
+	for elem in c_dept loop
+		BorrarDosBecarios(elem.deptno);
+	end loop;
+end;
+/
+
+create or replace procedure BorrarDosBecarios (p_coddept dept.deptno%type)
+is
+	cursor c_emp
+	is
+	select empno
+	from emp
+	where deptno = p_coddept
+	order by hiredate desc;
+	
+	v_emp c_emp%ROWTYPE;
+begin
+	emp c_emp;
+	fetch c_emp into v_emp;
+	while c_emp%FOUND and c_emp%ROWCOUNT<=2 loop
+		delete emp
+		where empno=v_emp.empno;
+		fetch c_emp into v_emp;
+	end loop;
+	close c_emp;
+end;
+/
