@@ -265,7 +265,7 @@ create or replace procedure RecortarSueldos (p_letra emp.ename%type)
 is
 begin
 	update emp
-	set sal = sal - 0.2 * sal
+	set sal = sal * 0.8
 	where substr(ename,1,1) = p_letra;
 	if SQL%ROWCOUNT = 0 then
 		dbms_output.put_line('No hay empleado que empiece por la letra '||p_letra);
