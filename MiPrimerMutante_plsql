@@ -1,4 +1,26 @@
 Haz un trigger que no deje que un departamento tenga más de cuatro empleados.
 
-create or replace trigger nomasde4
-	
+create or replace package PkgSueldo
+as
+	v_sueldopresi	NUMBER;
+end;
+/
+
+create or replace trigger porsentencia
+before insert on emp
+begin
+	select sal into PkgSueldo.v_sueldopresi
+	from emp
+	where job='PRESIDENT';
+end porsentencia;
+/
+
+create or replace trigger porfila
+before insert on emp
+for each row
+begin
+	if :new.sal > PkgSueldo.v_sueldopresi then
+		raise_application_error(-20001,'No puedes gastar tanto.');
+	end if;
+end porfila;
+/
