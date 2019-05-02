@@ -1,0 +1,4 @@
+Haz un trigger que no deje que un departamento tenga más de cuatro empleados.
+
+create or replace trigger nomasde4
+	
