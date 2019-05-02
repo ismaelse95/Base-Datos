@@ -24,3 +24,39 @@ begin
 	end if;
 end porfila;
 /
+
+Haz un trigger que no deje que un departamento tenga más de cuatro empleados.
+
+create or replace package contadores
+as
+	TYPE ttablacontadores IS TABLE OF NUMBER
+	INDEX BY BINARY_INTEGER;
+
+	vTABLA ttablacontadores;
+end contadores;
+/
+
+create or replace trigger porsentencia
+before insert on emp
+declare
+	cursor c_cont is
+	select deptno, count(*)
+	from emp
+	group by deptno;
+begin
+	for v_cont in c_cont loop
+		vTABLA(v_cont.deptno):=v_cont.numemp;
+	end loop;
+end porsentencia;
+/
+
+create or replace trigger porfila
+before insert on emp
+for each row
+	if vTABLA(:new.deptno) >=4 then
+		raise_application_error(-20001, 'Mas de 4 personas.');
+	else 
+		vTABLA(new.deptno):=vTABLA(new.deptno)+1;
+	end if;
+end porfila;
+/
