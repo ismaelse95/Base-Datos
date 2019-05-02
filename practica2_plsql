@@ -1,0 +1,184 @@
+EJERCICIO 2
+
+Partiendo del siguiente script, crea la BD correspondiente a los alumnos matriculados en algunos de los módulos de 
+1º y 2º curso del CFS y sus correspondientes notas:
+
+REM ******** TABLAS ALUMNOS, ASIGNATURAS, NOTAS: ***********
+
+DROP TABLE ALUMNOS cascade constraints;
+
+CREATE TABLE ALUMNOS
+(
+  DNI VARCHAR2(10) NOT NULL,
+  APENOM VARCHAR2(30),
+  DIREC VARCHAR2(30),
+  POBLA  VARCHAR2(15),
+  TELEF  VARCHAR2(10)  
+);
+
+DROP TABLE ASIGNATURAS cascade constraints;
+
+CREATE TABLE ASIGNATURAS
+(
+  COD NUMBER(2) NOT NULL,
+  NOMBRE VARCHAR2(25)
+);
+
+DROP TABLE NOTAS cascade constraints;
+
+CREATE TABLE NOTAS
+(
+  DNI VARCHAR2(10) NOT NULL,
+  COD NUMBER(2) NOT NULL,
+  NOTA NUMBER(2)
+);
+
+INSERT INTO ASIGNATURAS VALUES (1,'Prog. Leng. Estr.');
+INSERT INTO ASIGNATURAS VALUES (2,'Sist. Informáticos');
+INSERT INTO ASIGNATURAS VALUES (3,'Análisis');
+INSERT INTO ASIGNATURAS VALUES (4,'FOL');
+INSERT INTO ASIGNATURAS VALUES (5,'RET');
+INSERT INTO ASIGNATURAS VALUES (6,'Entornos Gráficos');
+INSERT INTO ASIGNATURAS VALUES (7,'Aplic. Entornos 4ªGen');
+
+INSERT INTO ALUMNOS VALUES
+('12344345','Alcalde García, Elena', 'C/Las Matas, 24','Madrid','917766545');
+
+INSERT INTO ALUMNOS VALUES
+('4448242','Cerrato Vela, Luis', 'C/Mina 28 - 3A', 'Madrid','916566545');
+
+INSERT INTO ALUMNOS VALUES
+('56882942','Díaz Fernández, María', 'C/Luis Vives 25', 'Móstoles','915577545');
+
+INSERT INTO NOTAS VALUES('12344345', 1,6);
+INSERT INTO NOTAS VALUES('12344345', 2,5);
+INSERT INTO NOTAS VALUES('12344345', 3,6);
+
+INSERT INTO NOTAS VALUES('4448242', 4,6);
+INSERT INTO NOTAS VALUES('4448242', 5,8);
+INSERT INTO NOTAS VALUES('4448242', 6,4);
+INSERT INTO NOTAS VALUES('4448242', 7,5);
+
+INSERT INTO NOTAS VALUES('56882942', 5,7);
+INSERT INTO NOTAS VALUES('56882942', 6,8);
+INSERT INTO NOTAS VALUES('56882942', 7,9);
+
+COMMIT;
+
+Diseña un procedimiento al que pasemos como parámetro de entrada el nombre de uno de los módulos existentes en la BD y 
+visualice el nombre de los alumnos que lo han cursado junto a su nota.
+
+Al final del listado debe aparecer el nº de suspensos, aprobados, notables y sobresalientes.
+
+Asimismo, deben aparecer al final los nombres y notas de los alumnos que tengan la nota más alta y la más baja.
+
+Debes comprobar que las tablas tengan almacenada información y que exista el módulo cuyo nombre pasamos como parámetro 
+al procedimiento.
+
+
+
+Progama principal:
+  cursor de las notas
+  guardar informacion sobre las notas en variables
+  comprobar informacion y modulos
+  Abrimos for
+    comprobamos alumnos que hay
+    comprobar nota alta y baja
+  cerramos for
+  resultado de los nombres y las notas
+
+-----------------------------------------------------
+
+create or replace procedure practicajuv2(p_asig asignaturas.nombre%type)
+is
+  cursor c_notas
+  is
+  select apenom, nota
+  from alumnos a, notas n
+  where n.dni=a.dni
+  and n.cod = (select cod
+               from asignaturas
+               where nombre = p_asig);
+
+  suspenso NUMBER:=0;
+  aprobado NUMBER:=0;
+  notable NUMBER:=0;
+  sobresaliente NUMBER:=0;
+  v_maxima notas.nota%type:=-1;
+  v_minima notas.nota%type:=11;
+  v_alumnomax alumnos.apenom%type;
+  v_alumnomin alumnos.apenom%type;
+begin
+  /*Informes(p_asig);
+  Excepciones(p_asig);*/
+  for elem in c_notas loop
+    AlumnosNotas(elem.apenom, elem.nota);
+    ContadorNotas(elem.nota, suspenso, aprobado, notable, sobresaliente);
+    AltayBaja(elem.apenom, elem.nota, v_maxima, v_minima, v_alumnomax, v_alumnomin);
+  end loop;
+  Resultado(suspenso, aprobado, notable, sobresaliente, v_alumnomax, v_maxima, v_alumnomin, v_minima);
+end practicajuv2; 
+/
+
+create or replace procedure Informes
+
+end Informes;
+/
+
+create or replace procedure Excepciones
+
+end Excepciones;
+/
+
+create or replace procedure AltayBaja(p_nombre alumnos.apenom%type, p_nota notas.nota%type, v_maxima IN OUT notas.nota%type, v_minima IN OUT notas.nota%type, v_alumnomax IN OUT alumnos.apenom%type, v_alumnomin IN OUT alumnos.apenom%type)
+is
+begin
+  if p_nota>v_maxima then
+    v_maxima:=p_nota;
+    v_alumnomax:=p_nombre;
+  end if;
+  if p_nota<v_minima then
+    v_minima:=p_nota;
+    v_alumnomin:=p_nombre;
+  end if;
+end AltayBaja;
+/
+
+create or replace procedure ContadorNotas(p_nota notas.nota%type, suspenso IN OUT NUMBER, aprobado IN OUT NUMBER, notable IN OUT NUMBER, sobresaliente IN OUT NUMBER)
+is 
+begin
+  case
+    when p_nota<5 then
+      suspenso:=suspenso+1;
+    when p_nota>=9 then
+      aprobado:=aprobado+1;
+      sobresaliente:=sobresaliente+1;
+    when p_nota>=7 and p_nota<9 then
+      aprobado:=aprobado+1;
+      notable:=notable+1;
+    when p_nota>=5 and p_nota<7 then
+      aprobado:=aprobado+1;
+  end case;
+end ContadorNotas;
+/
+
+create or replace procedure AlumnosNotas(p_nombre alumnos.apenom%type, p_notas notas.nota%type)
+is
+begin
+  dbms_output.put_line(p_nombre||' '||p_notas);
+end AlumnosNotas;
+/
+
+create or replace procedure Resultado(suspenso NUMBER, aprobado NUMBER, notable NUMBER, sobresaliente NUMBER, v_maxima notas.nota%type, v_minima notas.nota%type, v_alumnomax alumnos.apenom%type, v_alumnomin alumnos.apenom%type)
+is
+begin
+  dbms_output.put_line('Numero de Suspensos: '||suspenso);
+  dbms_output.put_line('Numero de Aprobados'||aprobado);
+  dbms_output.put_line('Numero de Notables'||notable);
+  dbms_output.put_line('Numero de Sobresalientes'||sobresaliente);
+  dbms_output.put_line('Nombre nota maxima'||v_alumnomax);
+  dbms_output.put_line('Nota maxima'||v_maxima);
+  dbms_output.put_line('Nombre nota minima'||v_alumnomin);
+  dbms_output.put_line('Nota minima'||v_minima);
+end Resultado;
+/
