@@ -25,7 +25,7 @@ begin
 end porfila;
 /
 
-Haz un trigger que no deje que un departamento tenga más de cuatro empleados.
+--------------------------------------------------------------------------------------------
 
 create or replace package contadores
 as
@@ -53,10 +53,98 @@ end porsentencia;
 create or replace trigger porfila
 before insert on emp
 for each row
+begin
 	if vTABLA(:new.deptno) >=4 then
 		raise_application_error(-20001, 'Mas de 4 personas.');
 	else 
 		vTABLA(new.deptno):=vTABLA(new.deptno)+1;
 	end if;
 end porfila;
+/
+
+--------------------------------------------------------------------------------------------
+
+create or replace package Pkgcontadores
+as
+	TYPE tregcontadores IS RECORD OF
+	(
+		coddept 	dept.deptno%type,
+		numemp 		NUMBER
+	);
+
+	TYPE ttablacontadores is table of tregcontadores
+	INDEX BY BINARY_INTEGER;
+
+	vTABLA ttablacontadores;
+edn PkgSueldo;
+/
+
+create or replace trigger porsentencia
+before insert on emp
+declare
+	cursor c_cont is
+	select deptno, count(e.empno) as num
+	from emp e, dept d
+	where e.deptno(+)=d.deptno 
+	group by deptno;
+
+	i NUMBER:=0;
+begin
+	for v_emp in c_cont loop
+		Pkgcontadores.vTABLA(i).coddept:=v_emp.deptno;
+		Pkgcontadores.vTABLA(i).numemp:=v_emp.num;
+		i:=i+1;
+	end loop;
+end porsentencia;
+/
+
+create or replace trigger porfila
+before insert on emp
+for each row
+declare
+	v_numempactual NUMBER;
+begin
+	v_numempactual:=Devolvernumempleados(:new.deptno);
+	if v_numempactual=-1 then
+		Creardeapartamentonuevo(:new.deptno);
+	end if;
+	if v_numempactual >=4 then
+		raise_application_error(-20001, 'Mas de 4 personas.');
+	else 
+		Incrementarnumempleados(new.deptno);
+	end if;
+end porfila;
+/
+
+create or replace function Devolvernumempleados(p_deptno dept.deptno%type)
+return NUMBER
+is
+	v_numemp 	NUMBER:=-1; -->Por si la tabla no tiene ese departamento.
+begin
+	for i in Pkgcontadores.vTABLA.FIRST..Pkgcontadores.vTABLA.LAST loop
+		if Pkgcontadores.vTABLA(i).coddept=p_deptno then
+			v_numemp:=Pkgcontadores.vTABLA(i).numemp;
+		end if;
+	end loop;
+	return v_numemp;
+end Devolvernumempleados;
+/
+
+create or replace procedure Incrementarnumempleados(p_deptno dept.deptno%type)
+is 
+begin
+	for i in Pkgcontadores.vTABLA.FIRST..Pkgcontadores.vTABLA.LAST loop
+		if Pkgcontadores.vTABLA(i).coddept=p_deptno then
+			Pkgcontadores.vTABLA(i).numemp:=Pkgcontadores.vTABLA(i).numemp+1;
+		end if;
+	end loop;
+end Incrementarnumempleados;
+/
+
+create or replace procedure Creardeapartamentonuevo(p_deptno dept.deptno%type)
+is 
+begin
+	Pkgcontadores.vTABLA(Pkgcontadores.vTABLA.LAST+1).coddept=p_deptno;
+	Pkgcontadores.vTABLA(Pkgcontadores.vTABLA.LAST).numemp:=1;
+end Creardeapartamentonuevo;
 /
