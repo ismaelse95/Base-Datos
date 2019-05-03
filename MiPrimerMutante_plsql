@@ -148,3 +148,11 @@ begin
 	Pkgcontadores.vTABLA(Pkgcontadores.vTABLA.LAST).numemp:=1;
 end Creardeapartamentonuevo;
 /
+
+-----------------------------------------------------------------------------------
+
+Para probar la tabla mutante hay que añadir otra tabla con datos:
+
+insert into emp
+select *
+from empbcm;
