@@ -105,7 +105,7 @@ declare
 	v_numempactual NUMBER;
 begin
 	v_numempactual:=Devolvernumempleados(:new.deptno);
-	if v_numempactual=-1 then
+	if v_numempactual=-1 then		--> Creacion de nueva fila de un departamento.
 		Creardeapartamentonuevo(:new.deptno);
 	end if;
 	if v_numempactual >=4 then
