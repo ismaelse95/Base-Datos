@@ -76,7 +76,7 @@ as
 	INDEX BY BINARY_INTEGER;
 
 	vTABLA ttablacontadores;
-edn PkgSueldo;
+edn Pkgcontadores;
 /
 
 create or replace trigger porsentencia
